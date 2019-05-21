@@ -57,25 +57,40 @@ else
   #  ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
   #done
   # Install fonts
-  git clone https://github.com/powerline/fonts.git "${HOME}/myfonts"--depth=1
+  git clone https://github.com/powerline/fonts.git "${HOME}/myfonts" --depth=1
   cd "${HOME}/myfonts" && ./install.sh
   cd .. && rm -rf "${HOME}/myfonts"
   # FREEZE KERNEL VERSION
   cat /proc/version
-  sudo grubby --default-kernel
-  sudo dnf install -y kernel-4.20.13-200.fc29.x86_64
-  sudo dnf mark install kernel-4.20.13-200.fc29.x86_64
-  sudo grubby --set-default /boot/vmlinuz-4.20.13-200.fc29.x86_64
+  #sudo grubby --default-kernel
+  sudo grubby --info=ALL
+  #sudo dnf install -y kernel-4.20.13-200.fc29.x86_64
+  #sudo dnf mark install kernel-4.20.13-200.fc29.x86_64
+  #sudo grubby --set-default /boot/vmlinuz-4.20.13-200.fc29.x86_64
+  # VIRTUALBOX GUEST ADDITIONS FEDORA
+  sudo systemctl status vboxservice
+  # dnf list installed | grep -i virtualbox
+  #sudo rpm -qa | grep -i virtualbox
+  # # virtualbox-guest-additions-6.0.6-1.fc30.x86_64 | https://fedora.pkgs.org/30/fedora-updates-x86_64/virtualbox-guest-additions-6.0.6-1.fc30.x86_64.rpm.html
+  # # rpm -ql virtualbox-guest-additions-6.0.6-1.fc30.x86_64
+  #sudo dnf update 'kernel*'
+  #sudo dnf install make gcc dkms bzip2 perl kernel-headers kernel-devel
+  #sudo export KERN_DIR=/usr/src/kernels/`uname -r`
+  #sudo mount -r /dev/cdrom /media
+  #cd /media
+  #sudo ./VBoxLinuxAdditions.run 
+  #xrandr --output XWAYLAND0 --mode 2560x1600
 fi
 if [ -x "$(command -v docker)" ]; then
   echo "Docker already installed"
 else
   echo "Install docker"
-  sudo dnf -y install dnf-plugins-core
+  #curl -fsSL get.docker.com | CHANNEL=test sh ##https://github.com/docker/for-linux/issues/430#issuecomment-443882230
+  ## https://www.reddit.com/r/Fedora/comments/9u8k66/docker_fedora_29/
   sudo dnf config-manager \
   --add-repo \
   https://download.docker.com/linux/fedora/docker-ce.repo
-  sudo dnf install -y docker-ce
+  sudo dnf install -y docker-ce 
   sudo groupadd docker
   sudo usermod -aG docker $USER
   sudo bash -c 'cat << EOF > /etc/docker/daemon.json
@@ -90,7 +105,6 @@ else
   }
   EOF'
   sudo systemctl start docker
-  #docker run hello-world
   #docker run hello-world
 fi
 if [ -x "$(command -v molecule)" ]; then
